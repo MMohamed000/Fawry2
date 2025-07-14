@@ -59,12 +59,6 @@ class Paper_book:public Book{
         return this->is_shippable;
     }
     
-    public:void printDetails(){
-        std::cout<<"Title:"<<title<<"\n"<<"ISBN:"<<ISBN<<"\n"<<"publication_date:"<<publication_date<<"\n";
-        std::cout<<"Price:"<<price<<"$"<<"\n"<<"Stock:"<<Stock<<"\n"<<"is_shippable:"<<is_shippable<<"\n";
-    }
-    
-    
 };
 
 class EBook:public Book{
@@ -181,7 +175,7 @@ class CheckOutService{
     public:double BuyBook(std::string ISBN,int qty,std::string email,std::string address,BookType type){
         std::shared_ptr<Book>book=inventory.searchByISBN(ISBN);
         
-        if(!book)throw std::runtime_error("Book Not Found.");
+        if(!book)throw std::runtime_error("Book Got Deleted.");
         
         double amount=0.0;
         
@@ -198,8 +192,11 @@ class CheckOutService{
                     if(copy->Is_shippable()){
                         copy->setStock(copy->getStock()-qty);
                         amount+=copy->getPrice()*qty;
+                        // std::cout<<"Remaining Stock: "<<copy->getStock()<<"\n";
                         // Send to a shipping Service;
                         shipping.get(copy,address);
+                    }else{
+                        throw std::runtime_error("Book cannot being shipped.");
                     }
                 }
                 
@@ -212,6 +209,8 @@ class CheckOutService{
                 if(copy->send_to_Email()){
                     mailService.get(copy,email);
                     amount=copy->getPrice();
+                }else{
+                    throw std::runtime_error("Book cannot being sent via email.");
                 }
                 
                 break;
@@ -239,15 +238,17 @@ class BookStoreTesting{
     public:void add_Test(){
         
         std::shared_ptr<Book>b1=std::make_shared<Paper_book>("Title1", "ISBN1", 2021, 29.99, 3,true);
+        std::shared_ptr<Book>b0=std::make_shared<Paper_book>("Title4", "ISBN0", 2021, 29.99, 3,false);
         std::shared_ptr<Book>b2=std::make_shared<EBook>("Title2", "ISBN2", 2021, 21,"PDF",true);
         std::shared_ptr<Book>b3=std::make_shared<EBook>("Title3", "ISBN3", 2024, 15,"PDF",false);
         
         inventoryTeaster.add_books(b1);
         inventoryTeaster.add_books(b2);
         inventoryTeaster.add_books(b3);
+        inventoryTeaster.add_books(b0);
         
         for(auto book:inventoryTeaster.getBooks()){
-            std::cout<<book->getTitle()<<" "<<book->getPrice()<<"\n";
+            std::cout<<"Book Title: "<<book->getTitle()<<" "<<"Book Price: "<<book->getPrice()<<"$\n";
         }
 
     }
@@ -276,5 +277,5 @@ int main(int argc,const char*argv[]){
     // testing.add_Test();
     // // testing.Remove_Test(2);
     // testing.Buy_Test("ISBN1",2,"mohamed.saad@gmail.com","Fawry Bulding A",BookType::PaperBook);
-    // return(0);
+    return(0);
 }
