@@ -77,11 +77,6 @@ class EBook:public Book{
     public:bool send_to_Email(){
         return this->emailable;
     }
-    
-    public:void printDetails(){
-        std::cout<<"Title:"<<title<<"\n"<<"ISBN:"<<ISBN<<"\n"<<"publication_date:"<<publication_date<<"\n";
-        std::cout<<"Price:"<<price<<"$"<<"\n"<<"filetype:"<<filetype<<"\n"<<"emailable:"<<emailable<<"\n";
-    }
 };
 
 class Showcase:public Book{
@@ -93,12 +88,6 @@ class Showcase:public Book{
     public:bool Sales(){
         return false;
     }
-    
-    public:void printDetails(){
-        std::cout<<"Title:"<<title<<"\n"<<"ISBN:"<<ISBN<<"\n"<<"publication_date:"<<publication_date<<"\n";
-        std::cout<<"Price:"<<price<<"$"<<"\n"<<"Salable:"<<false<<"\n";
-    }
-    
 };
 
 class Inventory{
