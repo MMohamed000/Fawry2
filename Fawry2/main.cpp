@@ -1,4 +1,11 @@
 #include<bits/stdc++.h>
+
+enum class BookType{
+    PaperBook,
+    EBook,
+    DemoBook
+};
+
 class Book{
     protected:std::string title;
     protected:std::string ISBN;
@@ -31,6 +38,7 @@ class Book{
         return this->price;
     }
     
+    public:virtual BookType getType()=0;
     virtual ~Book()=default;
 };
 
@@ -59,6 +67,10 @@ class Paper_book:public Book{
         return this->is_shippable;
     }
     
+    public:BookType getType()override{
+        return BookType::PaperBook;
+    }
+    
 };
 
 class EBook:public Book{
@@ -77,6 +89,10 @@ class EBook:public Book{
     public:bool send_to_Email(){
         return this->emailable;
     }
+    
+    public:BookType getType()override{
+        return BookType::EBook;
+    }
 };
 
 class Showcase:public Book{
@@ -87,6 +103,10 @@ class Showcase:public Book{
     
     public:bool Sales(){
         return false;
+    }
+    
+    public:BookType getType()override{
+        return BookType::DemoBook;
     }
 };
 
@@ -146,13 +166,6 @@ class MailService{
 };
 
 
-
-enum class BookType{
-    PaperBook,
-    EBook,
-    DemoBook
-};
-
 class CheckOutService{
     
     private:Inventory&inventory;
@@ -161,10 +174,12 @@ class CheckOutService{
     
     public:CheckOutService(Inventory&inv):inventory(inv){};
     
-    public:double BuyBook(std::string ISBN,int qty,std::string email,std::string address,BookType type){
+    public:double BuyBook(std::string ISBN,int qty,std::string email,std::string address){
         std::shared_ptr<Book>book=inventory.searchByISBN(ISBN);
         
         if(!book)throw std::runtime_error("Book Got Deleted.");
+        
+        BookType type=book->getType();
         
         double amount=0.0;
         
@@ -251,11 +266,11 @@ class BookStoreTesting{
         
     }
     
-    public:void Buy_Test(std::string ISBN,int qty,std::string email,std::string address,BookType type){
+    public:void Buy_Test(std::string ISBN,int qty,std::string email,std::string address){
         
         double paid_amount=0.0;
         
-        paid_amount=placingOrder.BuyBook(ISBN,qty,email,address,type);
+        paid_amount=placingOrder.BuyBook(ISBN,qty,email,address);
         
         std::cout<<"Paid Amount:"<<paid_amount<<"$"<<std::endl;
     }
@@ -265,6 +280,6 @@ int main(int argc,const char*argv[]){
     // BookStoreTesting testing;
     // testing.add_Test();
     // // testing.Remove_Test(2);
-    // testing.Buy_Test("ISBN1",2,"mohamed.saad@gmail.com","Fawry Bulding A",BookType::PaperBook);
+    // testing.Buy_Test("ISBN1",2,"mohamed.saad@gmail.com","Fawry Bulding A");
     return(0);
 }
